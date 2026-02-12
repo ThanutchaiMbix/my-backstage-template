@@ -1,0 +1,6 @@
+site_name: demo-applications-template
+site_description: Demo Application Template
+plugins:
+  - techdocs-core
+nav:
+  - Getting Started: index.md
