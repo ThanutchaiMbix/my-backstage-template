@@ -44,10 +44,10 @@ spec:
       input:
         url: ./app-template
         values:
-          application_name: '{{ parameters.application_name }}'
-          description: '{{ parameters.description }}'
-          package_name: '{{ parameters.package_name }}'
-          destination: '{{ parseRepoUrl parameters.repoUrl }}'
+          application_name: ${{ parameters.application_name }}
+          description: ${{ parameters.description }}
+          package_name: ${{ parameters.package_name }}
+          destination: ${ parseRepoUrl parameters.repoUrl }}
     - id: publish
       name: Publish
       action: publish:github
@@ -59,7 +59,7 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
     # Let's notify the user that the template has completed using the Notification action
     - id: notify
