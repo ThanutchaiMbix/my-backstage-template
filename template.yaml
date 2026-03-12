@@ -1,15 +1,14 @@
 apiVersion: scaffolder.backstage.io/v1beta3
-# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
 metadata:
-  name: app-template
-  title: Demo Application Template
-  description: Demo Application Template
+  name: springboot-app-template
+  title: Spring Boot Application with ArgoCD
+  description: สร้างโปรเจกต์ Spring Boot พร้อมไฟล์ Deployment สำหรับ Minikube/ArgoCD
 spec:
   type: service
   owner: user:guest
   parameters:
-    - title: Provide Simple Information
+    - title: Provide Application Information
       required:
         - application_name
         - package_name
@@ -17,15 +16,21 @@ spec:
         application_name:
           title: Name
           type: string
-          description: Unique name of the component
+          description: ชื่อ App (ควรเป็นภาษาอังกฤษตัวเล็ก เช่น my-app)
         package_name:
           title: Java Package Name
           type: string
-          description: Name for the java package. eg (io.backstage.blah)
+          default: com.example.demo
+          description: ชื่อ Java package (เช่น com.mbix.service)
         description:
           title: Description
           type: string
-          description: Help others understand what this website is for.
+        image_name:
+          title: Docker Image Name
+          type: string
+          description: ชื่อ Image ที่จะใช้รัน (เช่น my-registry/my-app:latest)
+          default: "nginx:latest"
+
     - title: Choose a location
       required:
         - repoUrl
@@ -42,38 +47,40 @@ spec:
       name: Fetch Template
       action: fetch:template
       input:
-        url: ./app-template
+        url: ./app-template # ชี้ไปที่โฟลเดอร์ skeleton
         values:
           application_name: ${{ parameters.application_name }}
           description: ${{ parameters.description }}
           package_name: ${{ parameters.package_name }}
-          destination: ${ parseRepoUrl parameters.repoUrl }}
+          image_name: ${{ parameters.image_name }}
+          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+
     - id: publish
-      name: Publish
+      name: Publish to GitHub
       action: publish:github
       input:
-        description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
+        description: "Spring Boot app: ${{ parameters.application_name }}"
         defaultBranch: 'main'
+
     - id: register
-      name: Register
+      name: Register in Catalog
       action: catalog:register
       input:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
-    # Let's notify the user that the template has completed using the Notification action
-    - id: notify
-      name: Notify
-      action: notification:send
-      input:
-        recipients: entity
-        entityRefs:
-          - user:default/guest
-        title: 'Template executed'
-        info: 'Your template has been executed'
-        severity: 'normal'
 
-  # Outputs are displayed to the user after a successful execution of the template.
+    - id: argocd-create
+      name: Create ArgoCD Application
+      action: argocd:create-resources
+      input:
+        appName: ${{ parameters.application_name }}
+        projectName: "default"
+        # URL ของ Repo ที่เราเพิ่ง Push ขึ้นไปใน step 'publish'
+        sourceRepoUrl: "https://github.com/${{ parameters.repoUrl | parseRepoUrl | get('owner') }}/${{ parameters.repoUrl | parseRepoUrl | get('repo') }}.git"
+        sourcePath: "k8s"
+        destinationServer: "https://kubernetes.default.svc"
+        destinationNamespace: "demo"
   output:
     links:
       - title: Repository

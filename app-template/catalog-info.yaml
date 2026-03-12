@@ -1,23 +1,24 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: ${{values.application_name | dump}}
-  description: ${{values.description | dump}}
+  name: ${{ values.application_name }}
+  description: ${{ values.description }}
   annotations:
-    github.com/project-slug: ${{values.destination.owner + "/" + values.destination.repo}}
+    github.com/project-slug: ${{ values.destination.owner }}/${{ values.destination.repo }}
+    argocd/app-name: ${{ values.application_name }}
     backstage.io/techdocs-ref: dir:.
 spec:
   type: service
   lifecycle: experimental
   owner: user:guest
   providesApis:
-    - pet-api
+    - demo-api
 ---
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: pet-api
-  description: The pet API
+  name: demo-api
+  description: The demo API
 spec:
   type: openapi
   lifecycle: experimental
