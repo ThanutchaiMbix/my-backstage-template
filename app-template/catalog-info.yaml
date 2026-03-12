@@ -4,9 +4,19 @@ metadata:
   name: ${{ values.application_name }}
   description: ${{ values.description }}
   annotations:
+    vault.io/secrets-path: backstage
     github.com/project-slug: ${{ values.destination.owner }}/${{ values.destination.repo }}
     argocd/app-name: ${{ values.application_name }}
     backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: ${{ values.application_name }}
+    backstage.io/kubernetes-label-selector: 'app=${{ values.application_name }}'
+  tags:
+    - spring-boot
+    - java
+    - maven
+    - kubernetes
+    - argocd
+    - vault
 spec:
   type: service
   lifecycle: experimental

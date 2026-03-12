@@ -4,9 +4,17 @@ metadata:
   name: springboot-app-template
   title: Spring Boot Application with ArgoCD
   description: สร้างโปรเจกต์ Spring Boot พร้อมไฟล์ Deployment สำหรับ Minikube/ArgoCD
+  tags:
+    - spring-boot
+    - java
+    - maven
+    - kubernetes
+    - argocd
 spec:
   type: service
   owner: user:guest
+  system: microservices
+
   parameters:
     - title: Provide Application Information
       required:
