@@ -85,7 +85,7 @@ spec:
         appName: ${{ parameters.application_name }}
         argoInstance: main
         projectName: demo
-        repoUrl: https://github.com/${{ parameters.repoUrl | parseRepoUrl | get('owner') }}/${{ parameters.repoUrl | parseRepoUrl | get('repo') }}.git
+        repoUrl: ${{ steps['publish'].output.remoteUrl }}
         path: 'k8s'
         namespace: demo
         
