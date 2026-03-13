@@ -82,7 +82,7 @@ spec:
           content-type: 'application/json'
         body:
           metadata:
-            name: ${{ parameters.appName }}
+            name: ${{ parameters.application_name }}
             namespace: argocd
           spec:
             project: default
@@ -92,7 +92,7 @@ spec:
               path: k8s
             destination:
               server: https://kubernetes.default.svc
-              namespace: ${{ parameters.namespace }}
+              namespace: demo
             syncPolicy:
               automated:
                 prune: true
