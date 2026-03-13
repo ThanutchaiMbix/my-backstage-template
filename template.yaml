@@ -85,11 +85,10 @@ spec:
         appName: ${{ parameters.application_name }}
         argoInstance: main
         projectName: default
-        namespace: ${{ parameters.namespace }}
         repoUrl: https://github.com/${{ parameters.repoUrl | parseRepoUrl | get('owner') }}/${{ parameters.repoUrl | parseRepoUrl | get('repo') }}.git
         path: 'k8s'
-        destinationServer: https://kubernetes.default.svc
-        destinationNamespace: demo
+        server: https://kubernetes.default.svc
+        namespace: demo
         
   output:
     links:
