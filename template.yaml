@@ -78,17 +78,19 @@ spec:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
-    - id: argocd-create
-      name: Create ArgoCD Application
+    - id: create-argocd-resources
+      name: Create ArgoCD Resources
       action: argocd:create-resources
       input:
         appName: ${{ parameters.application_name }}
-        projectName: "default"
-        # URL ของ Repo ที่เราเพิ่ง Push ขึ้นไปใน step 'publish'
-        sourceRepoUrl: "https://github.com/${{ parameters.repoUrl | parseRepoUrl | get('owner') }}/${{ parameters.repoUrl | parseRepoUrl | get('repo') }}.git"
-        sourcePath: "k8s"
-        destinationServer: "https://kubernetes.default.svc"
-        destinationNamespace: "demo"
+        argoInstance: main
+        projectName: default
+        namespace: ${{ parameters.namespace }}
+        repoUrl: https://github.com/${{ parameters.repoUrl | parseRepoUrl | get('owner') }}/${{ parameters.repoUrl | parseRepoUrl | get('repo') }}.git
+        path: 'k8s'
+        destinationServer: https://kubernetes.default.svc
+        destinationNamespace: demo
+        
   output:
     links:
       - title: Repository
