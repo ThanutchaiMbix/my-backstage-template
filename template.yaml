@@ -85,7 +85,7 @@ spec:
         appName: ${{ parameters.application_name }}
         argoInstance: main
         projectName: demo
-        repoUrl: ${{ steps['publish'].output.remoteUrl }}
+        repoUrl: https://github.com/ThanutchaiMbix/${{ parameters.application_name }}.git
         path: 'k8s'
         namespace: demo
         
