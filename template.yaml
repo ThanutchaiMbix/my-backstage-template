@@ -38,18 +38,10 @@ spec:
           type: string
           description: ชื่อ Image ที่จะใช้รัน (เช่น my-registry/my-app:latest)
           default: "nginx:latest"
-
-    - title: Choose a location
-      required:
-        - repoUrl
-      properties:
-        repoUrl:
-          title: Repository Location
+        orgName:
+          title: Organization name
           type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
+          default: ThanutchaiMbix
   steps:
     - id: fetch-template
       name: Fetch Template
@@ -64,12 +56,14 @@ spec:
           destination: ${{ parameters.repoUrl | parseRepoUrl }}
 
     - id: publish
-      name: Publish to GitHub
+      name: Publishing to the Source Code Repository
       action: publish:github
       input:
-        repoUrl: ${{ parameters.repoUrl }}
-        description: "Spring Boot app: ${{ parameters.application_name }}"
-        defaultBranch: 'main'
+        # allowedHosts: ['github.com']
+        description: ${{ parameters.description }}
+        repoUrl: github.com?owner=${{ parameters.orgName }}&repo=${{ parameters.application_name }}
+        defaultBranch: ${{ parameters.repoBranchName }}
+        repoVisibility: public
 
     - id: register
       name: Register in Catalog
@@ -78,16 +72,33 @@ spec:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
-    - id: create-argocd-resources
-      name: Create ArgoCD Resources
-      action: argocd:create-resources
+    - id: argocd
+      name: Create New Application in Argo CD
+      action: http:backstage:request
       input:
-        appName: ${{ parameters.application_name }}
-        argoInstance: main
-        projectName: demo
-        repoUrl: https://github.com/ThanutchaiMbix/${{ parameters.application_name }}.git
-        path: 'k8s'
-        namespace: demo
+        method: 'POST'
+        path: '/proxy/argocd/api/applications'
+        headers:
+          content-type: 'application/json'
+        body:
+          metadata:
+            name: ${{ parameters.appName }}
+            namespace: argocd
+          spec:
+            project: default
+            source:
+              repoURL: https://github.com/${{ parameters.orgName }}/${{ parameters.application_name }}.git
+              targetRevision: HEAD
+              path: k8s
+            destination:
+              server: https://kubernetes.default.svc
+              namespace: ${{ parameters.namespace }}
+            syncPolicy:
+              automated:
+                prune: true
+                selfHeal: true
+              syncOptions:
+                - CreateNamespace=true
         
   output:
     links:
