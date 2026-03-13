@@ -87,7 +87,6 @@ spec:
         projectName: default
         repoUrl: https://github.com/${{ parameters.repoUrl | parseRepoUrl | get('owner') }}/${{ parameters.repoUrl | parseRepoUrl | get('repo') }}.git
         path: 'k8s'
-        server: https://kubernetes.default.svc
         namespace: demo
         
   output:
