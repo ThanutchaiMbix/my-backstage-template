@@ -3,9 +3,16 @@ kind: Template
 metadata:
   name: springboot-argocd-minikube
   title: Spring Boot + ArgoCD + Minikube (Full Flow)
+  description: สร้างโปรเจกต์ Spring Boot พร้อมไฟล์ Deployment สำหรับ Minikube/ArgoCD
+  tags:
+    - spring-boot
+    - java
+    - maven
+    - kubernetes
+    - argocd
 spec:
   owner: user:guest
-  type: service
+  type: microservices
 
   parameters:
     - title: App Info

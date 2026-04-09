@@ -5,7 +5,7 @@ metadata:
   description: ${{ values.description }}
   annotations:
     vault.io/secrets-path: backstage
-    github.com/project-slug: ${{ values.destination.owner }}/${{ values.destination.repo }}
+    github.com/project-slug: ${{ parameters.orgName }}/${{ values.application_name }}
     argocd/app-name: ${{ values.application_name }}
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: ${{ values.application_name }}
