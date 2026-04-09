@@ -37,9 +37,11 @@ spec:
       input:
         url: ./skeleton
         values:
-          app_name: ${{ parameters.application_name }}
+          application_name: ${{ parameters.application_name }}
           image: ghcr.io/${{ parameters.orgName }}/${{ parameters.application_name }}:latest
-
+          description: ${{ parameters.description }}
+          orgName: ${{ parameters.orgName }}
+          
     # 2. publish to github
     - id: publish
       name: Publish Repo
