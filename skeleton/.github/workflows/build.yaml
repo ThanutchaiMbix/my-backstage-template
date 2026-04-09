@@ -11,24 +11,18 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        # ใช้ shell command โดยตรงเพื่อเลี่ยงปัญหาเรื่อง indentation ของ action
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/thanutchaimbix/springboot-argocd-minikube:latest
+      - name: Build and Push Image
+        run: |
+          # ตั้งชื่อ image เป็นตัวพิมพ์เล็ก (Hardcode ชื่อ repo ไปเลยเพื่อความชัวร์)
+          IMAGE_ID=ghcr.io/thanutchaimbix/springboot-argocd-minikube
+          
+          docker build . --file Dockerfile --tag $IMAGE_ID:latest
+          docker push $IMAGE_ID:latest
