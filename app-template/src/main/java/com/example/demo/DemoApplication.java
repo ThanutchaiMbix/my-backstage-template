@@ -15,6 +15,6 @@ public class DemoApplication {
 
     @GetMapping("/")
     public String hello() {
-        return "Hello from ${{ values.name }} running on Minikube!";
+        return "Hello from ${APPLICATION_NAME} running on Minikube!";
     }
 }

@@ -1,4 +1,19 @@
 app:
-  name: ${{values.application_name}}
-  description: ${{values.description}}
-  package: ${{values.package_name}}
+  name: ${{ values.application_name }}
+  description: ${{ values.description }}
+  package: ${{ values.package_name }}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true

@@ -1,85 +1,63 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: springboot-app-template
-  title: Spring Boot Application with ArgoCD
-  description: สร้างโปรเจกต์ Spring Boot พร้อมไฟล์ Deployment สำหรับ Minikube/ArgoCD
-  tags:
-    - spring-boot
-    - java
-    - maven
-    - kubernetes
-    - argocd
+  name: springboot-argocd-minikube
+  title: Spring Boot + ArgoCD + Minikube (Full Flow)
 spec:
-  type: service
   owner: user:guest
-  system: microservices
+  type: service
 
   parameters:
-    - title: Provide Application Information
+    - title: App Info
       required:
         - application_name
-        - package_name
       properties:
         application_name:
-          title: Name
           type: string
-          description: ชื่อ App (ควรเป็นภาษาอังกฤษตัวเล็ก เช่น my-app)
-        package_name:
-          title: Java Package Name
-          type: string
-          default: com.example.demo
-          description: ชื่อ Java package (เช่น com.mbix.service)
+          default: springboot-argocd-minikube
         description:
-          title: Description
           type: string
-        image_name:
-          title: Docker Image Name
-          type: string
-          description: ชื่อ Image ที่จะใช้รัน (เช่น my-registry/my-app:latest)
-          default: "nginx:latest"
+          default: This is a sample Spring Boot application created by Backstage Software Template
         orgName:
-          title: Organization name
           type: string
           default: ThanutchaiMbix
+
   steps:
-    - id: fetch-template
+    # 1. create project
+    - id: fetch
       name: Fetch Template
       action: fetch:template
       input:
-        url: ./app-template # ชี้ไปที่โฟลเดอร์ skeleton
+        url: ./skeleton
         values:
-          application_name: ${{ parameters.application_name }}
-          description: ${{ parameters.description }}
-          package_name: ${{ parameters.package_name }}
-          image_name: ${{ parameters.image_name }}
-          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+          app_name: ${{ parameters.application_name }}
+          image: ghcr.io/${{ parameters.orgName }}/${{ parameters.application_name }}:latest
 
+    # 2. publish to github
     - id: publish
-      name: Publishing to the Source Code Repository
+      name: Publish Repo
       action: publish:github
       input:
-        # allowedHosts: ['github.com']
-        description: ${{ parameters.description }}
         repoUrl: github.com?owner=${{ parameters.orgName }}&repo=${{ parameters.application_name }}
-        defaultBranch: ${{ parameters.repoBranchName }}
-        repoVisibility: public
+        defaultBranch: main
 
+    # 3. register catalog
     - id: register
-      name: Register in Catalog
+      name: Register
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
+    # 4. create argocd app
     - id: argocd
-      name: Create New Application in Argo CD
+      name: Create ArgoCD App
       action: http:backstage:request
       input:
-        method: 'POST'
-        path: '/proxy/argocd/api/applications'
+        method: POST
+        path: /proxy/argocd/api/applications
         headers:
-          content-type: 'application/json'
+          content-type: application/json
         body:
           metadata:
             name: ${{ parameters.application_name }}
@@ -99,11 +77,8 @@ spec:
                 selfHeal: true
               syncOptions:
                 - CreateNamespace=true
-        
+
   output:
     links:
-      - title: Repository
-        url: ${{ steps['publish'].output.remoteUrl }}
-      - title: Open in catalog
-        icon: catalog
-        entityRef: ${{ steps['register'].output.entityRef }}
+      - title: Repo
+        url: ${{ steps.publish.output.remoteUrl }}
