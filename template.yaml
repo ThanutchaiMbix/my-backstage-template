@@ -41,7 +41,7 @@ spec:
           image: ghcr.io/${{ parameters.orgName }}/${{ parameters.application_name }}:latest
           description: ${{ parameters.description }}
           orgName: ${{ parameters.orgName }}
-          
+
     # 2. publish to github
     - id: publish
       name: Publish Repo
@@ -49,6 +49,7 @@ spec:
       input:
         repoUrl: github.com?owner=${{ parameters.orgName }}&repo=${{ parameters.application_name }}
         defaultBranch: main
+        repoVisibility: public
 
     # 3. register catalog
     - id: register
