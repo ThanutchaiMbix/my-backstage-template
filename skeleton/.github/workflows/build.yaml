@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
 
-# กำหนดสิทธิ์ให้ Token สามารถเขียน Package (Docker Image) ได้
 permissions:
   contents: read
   packages: write
@@ -17,12 +16,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 1. จัดการเรื่องตัวพิมพ์ใหญ่ในชื่อ Repo (GHCR บังคับตัวเล็กทั้งหมด)
-      - name: Downcase Repo Name
+      # 1. ต้องรันขั้นตอนนี้ก่อน เพื่อสร้างตัวแปร IMAGE_NAME ที่เป็นตัวเล็กทั้งหมด
+      - name: Set Image Name to Lowercase
         run: |
+          # แปลงชื่อ User/Repo ให้เป็นตัวเล็กแล้วเก็บไว้ในระบบ Environment ของ GitHub
           echo "IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      # 2. Login โดยใช้ Action มาตรฐาน (ปลอดภัยกว่า)
+      # 2. Login เข้า GHCR (ใช้ Action มาตรฐาน)
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
@@ -30,18 +30,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 3. เตรียมเครื่องมือสำหรับการ Build Docker
+      # 3. Setup Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 4. Build และ Push ไปยัง GitHub Packages (GHCR)
+      # 4. Build และ Push
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          # ใช้ชื่อ IMAGE_NAME ที่เราแปลงเป็นตัวเล็กไว้ในขั้นตอนแรก
+          # ดึงค่า IMAGE_NAME ที่เราตั้งไว้ใน Step แรกมาใช้ผ่าน env.
           tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
-          # เผื่อไว้ใช้แคช เพื่อให้การ build ครั้งต่อไปเร็วขึ้น
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
