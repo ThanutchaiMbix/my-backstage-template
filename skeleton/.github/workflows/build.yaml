@@ -31,5 +31,4 @@ jobs:
         with:
           context: .
           push: true
-          # แก้เป็นชื่อ username และ repository ของคุณแบบ "ตัวเล็กทั้งหมด"
           tags: ghcr.io/thanutchaimbix/springboot-argocd-minikube:latest
