@@ -4,6 +4,7 @@ metadata:
   name: ${{ values.application_name }}
   labels:
     app: ${{ values.application_name }}
+    backstage.io/kubernetes-id: ${{ values.application_name }}
 spec:
   replicas: 1
   selector:
@@ -13,9 +14,10 @@ spec:
     metadata:
       labels:
         app: ${{ values.application_name }}
+        backstage.io/kubernetes-id: ${{ values.application_name }}
     spec:
       containers:
-        - name: spring-app
+        - name: ${{ values.application_name }}
           image: my-java-app:v1
           imagePullPolicy: IfNotPresent
           ports:
