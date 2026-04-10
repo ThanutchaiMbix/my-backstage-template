@@ -15,6 +15,6 @@ public class DemoApplication {
 
     @GetMapping("/")
     public String hello() {
-        return "Hello from ${APPLICATION_NAME} running on Minikube!";
+        return "Spring Boot is running on Minikube! (Manual Build Success)";
     }
 }

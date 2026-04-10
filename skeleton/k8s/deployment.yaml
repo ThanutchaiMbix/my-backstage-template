@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: spring-app
-          image: ${{ values.image }}
-          imagePullPolicy: Always
+          image: my-java-app:v1
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
 
