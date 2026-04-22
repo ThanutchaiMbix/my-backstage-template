@@ -5,6 +5,7 @@ metadata:
   labels:
     app: ${{ values.application_name }}
     backstage.io/kubernetes-id: ${{ values.application_name }}
+    backstage.io/kubernetes-namespace: demo
 spec:
   replicas: 1
   selector:
@@ -15,6 +16,7 @@ spec:
       labels:
         app: ${{ values.application_name }}
         backstage.io/kubernetes-id: ${{ values.application_name }}
+        backstage.io/kubernetes-namespace: demo
     spec:
       containers:
         - name: ${{ values.application_name }}
@@ -49,6 +51,7 @@ metadata:
   labels:
     app: ${{ values.application_name }}
     backstage.io/kubernetes-id: ${{ values.application_name }}
+    backstage.io/kubernetes-namespace: demo
 spec:
   type: NodePort
   selector:
