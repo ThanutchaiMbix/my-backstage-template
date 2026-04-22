@@ -9,7 +9,6 @@ metadata:
     argocd/app-name: ${{ values.application_name }}
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: ${{ values.application_name }}
-    backstage.io/kubernetes-label-selector: 'app=${{ values.application_name }}'
   tags:
     - spring-boot
     - java
