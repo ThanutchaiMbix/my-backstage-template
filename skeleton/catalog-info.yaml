@@ -17,6 +17,15 @@ metadata:
     - kubernetes
     - argocd
     - vault
+
+  links:
+    - url: https://localhost:8081/applications/argocd/${{ values.application_name }}
+      title: ArgoCD Dashboard
+      icon: dashboard
+      
+    - url: http://localhost:8080/swagger-ui.html
+      title: Swagger API Docs
+      icon: docs
 spec:
   type: service
   lifecycle: experimental

@@ -11,7 +11,7 @@ metadata:
     - kubernetes
     - argocd
 spec:
-  owner: user:guest
+  owner: developers
   type: microservices
 
   parameters:
