@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: my-backstage-template
+  annotations:
+    github.com/project-slug: ThanutchaiMbix/my-backstage-template
+spec:
+  type: other
+  lifecycle: unknown
+  owner: guests
